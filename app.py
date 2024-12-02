@@ -5,69 +5,77 @@ import pandas as pd  # Import pandas to read Excel files
 
 app = Flask(__name__)
 
+# Enable template auto-reloading
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 @app.route('/')
-def home():
-    return render_template('index.html')
+def welcome():
+    # Display the welcome page
+    return render_template('welcome.html')
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    try:
-        # Collect form data
-        username = request.form['user_name']
-        print(f"Username received: {username}")  # Debug print to verify the username
-        inputs = {
-            'initial_age': int(request.form['current_age']),
-            'retirement_age': int(request.form['retirement_age']),
-            'monthly_expenses': float(request.form['monthly_expenses']),
-            'monthly_in_hand': float(request.form['monthly_salary']),
-            'initial_pf_corpus': float(request.form['pf_corpus']),
-            'monthly_pf_contribution': float(request.form['pf_contribution']),
-            'initial_current_corpus': float(request.form['investment_corpus']),
-            'goals': []
-        }
-
-        num_goals = int(request.form['num_goals'])
-        for i in range(1, num_goals + 1):
-            goal = {
-                'amount': float(request.form[f'goal_{i}_target']),
-                'years': int(request.form[f'goal_{i}_years'])
+@app.route('/input', methods=['GET', 'POST'])
+def input_page():
+    if request.method == 'POST':
+        try:
+            # Collect form data
+            username = request.form['user_name']
+            print(f"Username received: {username}")  # Debug print to verify the username
+            inputs = {
+                'initial_age': int(request.form['current_age']),
+                'retirement_age': int(request.form['retirement_age']),
+                'monthly_expenses': float(request.form['monthly_expenses']),
+                'monthly_in_hand': float(request.form['monthly_salary']),
+                'initial_pf_corpus': float(request.form['pf_corpus']),
+                'monthly_pf_contribution': float(request.form['pf_contribution']),
+                'initial_current_corpus': float(request.form['investment_corpus']),
+                'goals': []
             }
-            inputs['goals'].append(goal)
 
-        # Run the financial planning script with collected inputs
-        result = check.main(data=inputs)
+            num_goals = int(request.form['num_goals'])
+            for i in range(1, num_goals + 1):
+                goal = {
+                    'amount': float(request.form[f'goal_{i}_target']),
+                    'years': int(request.form[f'goal_{i}_years'])
+                }
+                inputs['goals'].append(goal)
 
-        if result['success']:
-            # Generate the output file name with the user's name
-            output_filename = f"financial_report_{username}.xlsx"
-            output_file_path = os.path.join('static/generated_files', output_filename)
+            # Run the financial planning script with collected inputs
+            result = check.main(data=inputs)
 
-            # Ensure the file is moved to the correct static folder
-            if not os.path.exists(output_file_path):
-                os.rename(result['output_path'], output_file_path)  # Move the file to static folder
+            if result['success']:
+                # Generate the output file name with the user's name
+                output_filename = f"financial_report_{username}.xlsx"
+                output_file_path = os.path.join('static/generated_files', output_filename)
 
-            # Read the "Summary" sheet using pandas
-            summary_data = pd.read_excel(output_file_path, sheet_name='Summary')
+                # Ensure the file is moved to the correct static folder
+                if not os.path.exists(output_file_path):
+                    os.rename(result['output_path'], output_file_path)  # Move the file to static folder
 
-            # Convert the dataframe to HTML (you can format it as needed)
-            summary_html = summary_data.to_html(classes='table table-bordered', index=False)
+                # Read the "Summary" sheet using pandas
+                summary_data = pd.read_excel(output_file_path, sheet_name='Summary')
 
-            # Pass username to result.html
+                # Convert the dataframe to HTML (you can format it as needed)
+                summary_html = summary_data.to_html(classes='table table-bordered', index=False)
+
+                # Pass username to result.html
+                return render_template(
+                    'result.html',
+                    username=username,  # Pass the username here
+                    output_path=output_filename,  # Pass the file name to the result page
+                    file_path=output_file_path,  # Pass the static file path for download
+                    summary_html=summary_html  # Pass the HTML table of the summary data
+                )
+            else:
+                return f"An error occurred: {result.get('error', result.get('message'))}", 500
+
+        except Exception as e:
             return render_template(
-                'result.html',
-                username=username,  # Pass the username here
-                output_path=output_filename,  # Pass the file name to the result page
-                file_path=output_file_path,  # Pass the static file path for download
-                summary_html=summary_html  # Pass the HTML table of the summary data
-            )
-        else:
-            return f"An error occurred: {result.get('error', result.get('message'))}", 500
-
-    except Exception as e:
-        return render_template(
-            'error.html',
-            error_message=f"An unexpected error occurred: {str(e)}"
-        ), 500
+                'error.html',
+                error_message=f"An unexpected error occurred: {str(e)}"
+            ), 500
+    else:
+        # Render the input form page
+        return render_template('input_form.html')
 
 @app.route('/download/<filename>')
 def download_file(filename):
