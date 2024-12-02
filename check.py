@@ -15,7 +15,7 @@ class FinancialInputs:
         self.retirement_age: int = 0
         self.life_expectancy: int = 80
         self.initial_monthly_expense: float = 0
-        self.monthly_in_hand: float = 0  # Removed annual_ctc
+        self.monthly_in_hand: float = 0  
         self.initial_pf_corpus: float = 0
         self.monthly_pf_contribution: float = 0
         self.initial_current_corpus: float = 0
@@ -124,7 +124,7 @@ class FinancialPlanner:
                 salary_corpus *= (1 + self.config.rate_of_return)
                 
                 # Update PF corpus with monthly contributions and interest
-                pf_corpus += (monthly_pf_contribution * 12)  # Add annual PF contribution
+                pf_corpus += (monthly_pf_contribution * 12) 
                 pf_corpus *= (1 + PF_INTEREST_RATE)
                 
                 # Apply interest rates to current corpus
@@ -179,7 +179,7 @@ class FinancialPlanner:
         """Determine required monthly investment for retirement"""
         initial_investment = 5000
         max_iterations = 100000
-        min_final_corpus = 100000  # Minimum acceptable final corpus
+        min_final_corpus = 100000  
 
         for _ in range(max_iterations):
             df = self.calculate_retirement_plan(initial_investment)
@@ -230,7 +230,7 @@ class FinancialPlanner:
 
         for iteration in range(MAX_ITERATIONS):
             data = []
-            monthly_investments = []  # Reset monthly investments for each iteration
+            monthly_investments = []  
             prev_total_investment = 0
             current_monthly_investment = monthly_investment * investment_multiplier
             accumulated_amount = 0
@@ -335,7 +335,7 @@ class FinancialPlanner:
 
         # Step 2: Calculate initial yearly investment for the target amount (without step-up applied yet)
         compound_factor = (1 + target_return) ** years
-        initial_yearly_investment = target_amount / ((compound_factor - 1) / target_return)  # Fixed base investment
+        initial_yearly_investment = target_amount / ((compound_factor - 1) / target_return)  
         initial_monthly_investment = initial_yearly_investment / 12
 
         # Initialize lists for storing data and accumulated investment
@@ -352,7 +352,7 @@ class FinancialPlanner:
             allocation = self.get_goal_allocation(age, years)
 
             # Apply step-up logic: increase the investment for each subsequent year
-            if age > self.config.initial_age:  # After the first year, apply step-up
+            if age > self.config.initial_age:  
                 current_yearly_investment *= (1 + self.config.investment_step_up_rate)
                 current_monthly_investment = current_yearly_investment / 12
             
@@ -372,7 +372,7 @@ class FinancialPlanner:
 
             # Calculate total return and update accumulated investment
             total_return = sum(returns.values())
-            previous_accumulated_investment = accumulated_investment  # Save previous accumulated investment
+            previous_accumulated_investment = accumulated_investment 
             accumulated_investment += yearly_investment + total_return
             
             # Correct the Annual Return Percentage calculation
