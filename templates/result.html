@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Planning Tool - Result</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
             background-image: url('{{ url_for("static", filename="images/Currency_note.jpg") }}');
@@ -11,8 +12,13 @@
             background-position: center;
             background-attachment: fixed;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Quicksand', sans-serif; /* Use Quicksand font */
             padding: 20px;
+            height: 100vh; /* Ensure full height for vertical centering */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         .container {
@@ -20,10 +26,20 @@
             padding: 20px;
             border-radius: 8px;
             width: 80%;
-            margin: auto;
+            text-align: center; /* Center the content */
         }
 
-        h1, h2 {
+        h1 {
+            font-family: 'Poppins', sans-serif; /* Use Poppins font for the title */
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif; /* Use Poppins font for the subheading */
+            font-weight: 600;
+            font-size: 2rem;
             text-align: center;
         }
 
@@ -52,6 +68,23 @@
             background-color: rgba(255, 255, 255, 0.2);  /* Light transparent color for alternating rows */
         }
 
+        .blink {
+            animation: blink 1s infinite;
+            font-weight: bold; /* Make it bold */
+            font-size: 24px; /* Increase font size */
+            text-decoration: none;
+            color: #FF6347; /* Change color to make it stand out */
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
         a {
             display: block;
             text-align: center;
@@ -68,7 +101,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>=== Financial Planning Tool - Results ===</h1>
+        <h1>Financial Planning Tool - Results</h1>
 
         <div class="result-container">
             <h2>Hello, {{ username }}!</h2>
@@ -78,7 +111,7 @@
             <div>{{ summary_html | safe }}</div>
     
             <p>Download your financial planning report:</p>
-            <a href="{{ url_for('download_file', filename=output_path) }}" download>Download Report</a>
+            <a class="blink" href="{{ url_for('download_file', filename=output_path) }}" download>Download Report</a>
         </div>    
     </div>
 </body>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Planning Tool</title> <!-- Make sure this line exists in the head section -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-image: url('{{ url_for("static", filename="images/Currency_note.jpg") }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 8px;
+            width: 60%;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 98%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 1.1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .goal-section {
+            margin-top: 20px;
+        }
+
+        .goal-section h3 {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 500;
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+
+        .goal-section input {
+            width: 98%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+    </style>
+
+    <script>
+        function generateGoalFields() {
+            const numGoals = parseInt(document.getElementById("num_goals").value, 10);
+            const goalContainer = document.getElementById("goal_container");
+            goalContainer.innerHTML = ""; // Clear previous goals
+
+            for (let i = 1; i <= numGoals; i++) {
+                const goalSection = document.createElement("div");
+                goalSection.classList.add("goal-section");
+                goalSection.innerHTML = `
+                    <h3>Goal ${i} Details:</h3>
+                    <label>Enter target amount for Goal ${i} (in ₹):</label>
+                    <input type="number" name="goal_${i}_target" required><br>
+                    
+                    <label>Enter number of years to achieve Goal ${i}:</label>
+                    <input type="number" name="goal_${i}_years" required><br>
+                `;
+                goalContainer.appendChild(goalSection);
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <form action="/input" method="POST">
+        <h1>Financial Planning Tool</h1>  <!-- This should appear visible on the page -->
+
+        <h2>Enter Your Financial Details</h2>
+
+        <h2>Personal Information</h2>
+        <label>Enter your name:</label>
+        <input type="text" name="user_name" required><br>
+
+        <label>Enter your current age:</label>
+        <input type="number" name="current_age" required><br>
+
+        <label>Enter your desired retirement age:</label>
+        <input type="number" name="retirement_age" required><br>
+
+        <label>Enter your current monthly expenses (₹):</label>
+        <input type="number" name="monthly_expenses" required><br>
+
+        <label>Enter your monthly in-hand salary (₹):</label>
+        <input type="number" name="monthly_salary" required><br>
+
+        <!-- Existing Corpus Information -->
+        <h2>Existing Corpus Information</h2>
+
+        <label>Enter your current PF corpus amount (in ₹):</label>
+        <input type="number" name="pf_corpus" required><br>
+
+        <label>Enter your monthly PF contribution (in ₹):</label>
+        <input type="number" name="pf_contribution" required><br>
+
+        <label>Enter your current investment corpus amount (in ₹):</label>
+        <input type="number" name="investment_corpus" required><br>
+
+        <!-- Financial Goals -->
+        <h2>Financial Goals</h2>
+
+        <label>Enter the number of financial goals (1-10):</label>
+        <input type="number" id="num_goals" name="num_goals" min="1" max="10" required onchange="generateGoalFields()"><br>
+
+        <div id="goal_container"></div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to the Financial Planning Tool</title>
+    
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: url('{{ url_for("static", filename="images/Currency_note.jpg") }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 30px;
+            border-radius: 8px;
+            width: 60%;
+            text-align: center;
+        }
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            margin: 20px 0;
+        }
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        h3 {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 500;
+            font-size: 1.8rem;
+            margin: 20px 0 10px;
+        }
+        p {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .start-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .start-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Financial Planning Tool</h1>
+        <h2>Plan Your Financial Future</h2>
+        <p>This tool helps you calculate the necessary monthly investments for your retirement, allocate investments, and plan for financial goals such as buying a house or funding education.</p>
+        
+        <h3>How It Works:</h3>
+        <p>Enter your financial details, including your current income, expenses, retirement goals, and existing savings. The tool will generate a detailed report to guide you towards a secure financial future.</p>
+
+        <h3>Key Features:</h3>
+        <p>Dynamic investment allocation, goal-based planning, and a comprehensive Excel report that details your financial projections.</p>
+
+        <a href="/input" class="start-button">Get Started</a>
+    </div>
+</body>
+</html>
