@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_file
 import os
 import check  # Import your check.py module
-import pandas as pd  # Import pandas to read Excel files
+import pandas as pd 
 
 app = Flask(__name__)
 
@@ -19,7 +19,7 @@ def input_page():
         try:
             # Collect form data
             username = request.form['user_name']
-            print(f"Username received: {username}")  # Debug print to verify the username
+            print(f"Username received: {username}")
             inputs = {
                 'initial_age': int(request.form['current_age']),
                 'retirement_age': int(request.form['retirement_age']),
