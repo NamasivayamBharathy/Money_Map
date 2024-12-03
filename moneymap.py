@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_file
 import os
-import check  # Import your check.py module
+import financetool
 import pandas as pd 
 
 app = Flask(__name__)
@@ -40,7 +40,7 @@ def input_page():
                 inputs['goals'].append(goal)
 
             # Run the financial planning script with collected inputs
-            result = check.main(data=inputs)
+            result = financetool.main(data=inputs)
 
             if result['success']:
                 # Generate the output file name with the user's name
