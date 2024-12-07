@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Planning Tool</title> <!-- Make sure this line exists in the head section -->
+    <title>Financial Planning Tool</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500&display=swap" rel="stylesheet">
     
@@ -29,6 +29,8 @@
             width: 60%;
             max-width: 700px;
             text-align: center;
+            overflow-y: auto;
+            max-height: 90vh; /* Added to allow scrolling for large forms */
         }
 
         h1 {
@@ -94,15 +96,29 @@
             margin-top: 10px;
         }
 
-        .goal-section input {
-            width: 98%;
-            padding: 12px;
-            margin: 10px 0;
-            font-size: 1rem;
+        .error {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            text-align: left;
         }
     </style>
 
     <script>
+        // Function to validate and prevent negative values
+        function validateInput(inputElement) {
+            const value = inputElement.value;
+            const errorElement = document.getElementById(`${inputElement.name}_error`);
+
+            if (value < 0) {
+                errorElement.textContent = "Negative values are not allowed.";
+                inputElement.value = ""; // Clear the invalid input
+            } else {
+                errorElement.textContent = ""; // Clear the error message
+            }
+        }
+
         function generateGoalFields() {
             const numGoals = parseInt(document.getElementById("num_goals").value, 10);
             const goalContainer = document.getElementById("goal_container");
@@ -114,10 +130,12 @@
                 goalSection.innerHTML = `
                     <h3>Goal ${i} Details:</h3>
                     <label>Enter target amount for Goal ${i} (in ₹):</label>
-                    <input type="number" name="goal_${i}_target" required><br>
+                    <input type="number" name="goal_${i}_target" oninput="validateInput(this)" required>
+                    <div id="goal_${i}_target_error" class="error"></div>
                     
                     <label>Enter number of years to achieve Goal ${i}:</label>
-                    <input type="number" name="goal_${i}_years" required><br>
+                    <input type="number" name="goal_${i}_years" oninput="validateInput(this)" required>
+                    <div id="goal_${i}_years_error" class="error"></div>
                 `;
                 goalContainer.appendChild(goalSection);
             }
@@ -125,9 +143,8 @@
     </script>
 </head>
 <body>
-
     <form action="/input" method="POST">
-        <h1>Financial Planning Tool</h1>  <!-- This should appear visible on the page -->
+        <h1>Financial Planning Tool</h1>
 
         <h2>Enter Your Financial Details</h2>
 
@@ -136,41 +153,42 @@
         <input type="text" name="user_name" required><br>
 
         <label>Enter your current age:</label>
-        <input type="number" name="current_age" required><br>
+        <input type="number" name="current_age" oninput="validateInput(this)" required>
+        <div id="current_age_error" class="error"></div>
 
         <label>Enter your desired retirement age:</label>
-        <input type="number" name="retirement_age" required><br>
+        <input type="number" name="retirement_age" oninput="validateInput(this)" required>
+        <div id="retirement_age_error" class="error"></div>
 
         <label>Enter your current monthly expenses (₹):</label>
-        <input type="number" name="monthly_expenses" required><br>
+        <input type="number" name="monthly_expenses" oninput="validateInput(this)" required>
+        <div id="monthly_expenses_error" class="error"></div>
 
         <label>Enter your monthly in-hand salary (₹):</label>
-        <input type="number" name="monthly_salary" required><br>
+        <input type="number" name="monthly_salary" oninput="validateInput(this)" required>
+        <div id="monthly_salary_error" class="error"></div>
 
-        <!-- Existing Corpus Information -->
         <h2>Existing Corpus Information</h2>
-
         <label>Enter your current PF corpus amount (in ₹):</label>
-        <input type="number" name="pf_corpus" required><br>
+        <input type="number" name="pf_corpus" oninput="validateInput(this)" required>
+        <div id="pf_corpus_error" class="error"></div>
 
         <label>Enter your monthly PF contribution (in ₹):</label>
-        <input type="number" name="pf_contribution" required><br>
+        <input type="number" name="pf_contribution" oninput="validateInput(this)" required>
+        <div id="pf_contribution_error" class="error"></div>
 
         <label>Enter your current investment corpus amount (in ₹):</label>
-        <input type="number" name="investment_corpus" required><br>
+        <input type="number" name="investment_corpus" oninput="validateInput(this)" required>
+        <div id="investment_corpus_error" class="error"></div>
 
-        <!-- Financial Goals -->
         <h2>Financial Goals</h2>
-
         <label>Enter the number of financial goals (1-10):</label>
-        <input type="number" id="num_goals" name="num_goals" min="1" max="10" required onchange="generateGoalFields()"><br>
+        <input type="number" id="num_goals" name="num_goals" min="1" max="10" oninput="validateInput(this); generateGoalFields()" required>
+        <div id="num_goals_error" class="error"></div>
 
         <div id="goal_container"></div>
 
-        <!-- Submit Button -->
         <button type="submit">Submit</button>
-
     </form>
-
 </body>
 </html>
