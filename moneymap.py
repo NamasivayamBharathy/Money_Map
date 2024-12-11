@@ -8,6 +8,20 @@ app = Flask(__name__)
 # Enable template auto-reloading
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
+# Define the folder for generated files
+GENERATED_FILES_FOLDER = 'static/generated_files'
+
+def delete_existing_sheets(folder_path):
+    """Deletes all Excel files in the specified folder."""
+    try:
+        for file in os.listdir(folder_path):
+            if file.endswith('.xlsx'):
+                file_path = os.path.join(folder_path, file)
+                os.remove(file_path)
+                print(f"Deleted file: {file_path}")
+    except Exception as e:
+        print(f"Error while deleting files: {str(e)}")
+
 @app.route('/')
 def welcome():
     # Display the welcome page
@@ -38,6 +52,9 @@ def input_page():
                     'years': int(request.form[f'goal_{i}_years'])
                 }
                 inputs['goals'].append(goal)
+
+            # Delete existing Excel sheets in the folder
+            delete_existing_sheets(GENERATED_FILES_FOLDER)
 
             # Run the financial planning script with collected inputs
             result = financetool.main(data=inputs)
