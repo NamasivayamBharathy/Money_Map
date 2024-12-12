@@ -5,190 +5,269 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Planning Tool</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500&display=swap" rel="stylesheet">
-    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;500&family=Quicksand:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
         body {
-            background-image: url('{{ url_for("static", filename="images/Currency_note.jpg") }}');
+            background-image: url('{{ url_for("static", filename="images/First.jpg") }}');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             color: white;
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Roboto Mono', monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         form {
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.3); /* Transparent white background */
+            padding: 20px;
             border-radius: 8px;
-            width: 60%;
-            max-width: 700px;
-            text-align: center;
+            width: 90%;
+            max-width: 800px;
             overflow-y: auto;
-            max-height: 90vh; /* Added to allow scrolling for large forms */
+            max-height: 90vh;
+        }
+
+        h1, h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px #000;
         }
 
         h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            text-align: center;
+            color: #5db3e6;
+            font-weight: bold;
+            -webkit-text-stroke: 2px #000000;
         }
 
         h2 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 2.5rem;
+            font-size: 1.2rem;
+            color: #0026fc;
+            font-weight: bold;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            align-items: center;
             margin-bottom: 15px;
         }
 
-        label {
+        .form-group label {
             font-family: 'Quicksand', sans-serif;
-            font-size: 1.2rem;
-            display: block;
-            margin-bottom: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #0026fc;
+            text-align: right;
         }
 
-        input[type="text"], input[type="number"] {
-            width: 98%;
-            padding: 12px;
-            margin: 10px 0;
-            font-size: 1.1rem;
+        .form-group input, .form-group select {
+            padding: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
             border: 1px solid #ddd;
             border-radius: 5px;
-            background-color: #333;
-            color: white;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #018121;
+            font-family: 'Roboto Mono', monospace;
         }
 
-        input[type="number"]:focus, input[type="text"]:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #4CAF50;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1.1rem;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .goal-section {
-            margin-top: 20px;
-        }
-
-        .goal-section h3 {
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 500;
-            font-size: 1.5rem;
-            margin-top: 10px;
+            border-color: #018121;
+            box-shadow: 0px 0px 8px rgba(255, 215, 0, 0.8);
         }
 
         .error {
+            grid-column: 2 / span 1;
             color: red;
-            font-size: 0.9rem;
-            margin-top: -10px;
-            margin-bottom: 10px;
-            text-align: left;
+            font-size: 0.8rem;
+        }
+
+        .goal-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        button {
+            background: linear-gradient(45deg, #32CD32, #FFD700);
+            color: rgb(247, 22, 22);
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 6px #000;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #FFD700, #32CD32);
         }
     </style>
 
-    <script>
-        // Function to validate and prevent negative values
-        function validateInput(inputElement) {
-            const value = inputElement.value;
-            const errorElement = document.getElementById(`${inputElement.name}_error`);
+<script>
+    const financialGoals = [
+        "Vehicle Bike/Car",
+        "Dream Home",
+        "Dream Vacation",
+        "Child Education",
+        "Children's Marriage"
+    ];
 
-            if (value < 0) {
-                errorElement.textContent = "Negative values are not allowed.";
-                inputElement.value = ""; // Clear the invalid input
-            } else {
-                errorElement.textContent = ""; // Clear the error message
-            }
+    function populateGoals() {
+        const goalContainer = document.getElementById("goal_container");
+        goalContainer.innerHTML = ""; // Clear previous goals
+
+        for (let i = 0; i < financialGoals.length; i++) {
+            const goalSection = document.createElement("div");
+            goalSection.className = "goal-row";
+
+            const select = document.createElement("select");
+            select.name = `Goal${i + 1}`;
+            select.dataset.index = i;
+            select.onchange = updateDropdowns;
+
+            const defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = "Select Goal";
+            select.appendChild(defaultOption);
+
+            financialGoals.forEach(optionValue => {
+                const option = document.createElement("option");
+                option.value = optionValue;
+                option.textContent = optionValue;
+                select.appendChild(option);
+            });
+
+            const inputAmount = document.createElement("input");
+            inputAmount.type = "number";
+            inputAmount.name = `Goal${i + 1}_target`;
+            inputAmount.placeholder = "Target Amount (₹)";
+            inputAmount.oninput = () => validateInput(inputAmount);
+
+            const inputYears = document.createElement("input");
+            inputYears.type = "number";
+            inputYears.name = `Goal${i + 1}_years`;
+            inputYears.placeholder = "Years to Achieve";
+            inputYears.oninput = () => validateInput(inputYears);
+
+            goalSection.appendChild(select);
+            goalSection.appendChild(inputAmount);
+            goalSection.appendChild(inputYears);
+            goalContainer.appendChild(goalSection);
         }
+    }
 
-        function generateGoalFields() {
-            const numGoals = parseInt(document.getElementById("num_goals").value, 10);
-            const goalContainer = document.getElementById("goal_container");
-            goalContainer.innerHTML = ""; // Clear previous goals
+    function updateDropdowns() {
+        const selects = document.querySelectorAll("select[name^='Goal']");
+        const selectedValues = Array.from(selects)
+            .map(select => select.value)
+            .filter(value => value); // Get all selected values
 
-            for (let i = 1; i <= numGoals; i++) {
-                const goalSection = document.createElement("div");
-                goalSection.classList.add("goal-section");
-                goalSection.innerHTML = `
-                    <h3>Goal ${i} Details:</h3>
-                    <label>Enter target amount for Goal ${i} (in ₹):</label>
-                    <input type="number" name="goal_${i}_target" oninput="validateInput(this)" required>
-                    <div id="goal_${i}_target_error" class="error"></div>
-                    
-                    <label>Enter number of years to achieve Goal ${i}:</label>
-                    <input type="number" name="goal_${i}_years" oninput="validateInput(this)" required>
-                    <div id="goal_${i}_years_error" class="error"></div>
-                `;
-                goalContainer.appendChild(goalSection);
-            }
-        }
-    </script>
+        selects.forEach(select => {
+            const currentValue = select.value;
+            Array.from(select.options).forEach(option => {
+                if (option.value && option.value !== currentValue) {
+                    option.disabled = selectedValues.includes(option.value);
+                } else {
+                    option.disabled = false;
+                }
+            });
+        });
+    }
+
+    function validateInput(inputElement) {
+        const value = inputElement.value;
+        if (value < 0) inputElement.value = ""; // Prevent negative input
+    }
+
+    document.addEventListener("DOMContentLoaded", populateGoals);
+</script>
 </head>
 <body>
     <form action="/input" method="POST">
         <h1>Financial Planning Tool</h1>
-
+    
         <h2>Enter Your Financial Details</h2>
-
-        <h2>Personal Information</h2>
-        <label>Enter your name:</label>
-        <input type="text" name="user_name" required><br>
-
-        <label>Enter your current age:</label>
-        <input type="number" name="current_age" oninput="validateInput(this)" required>
-        <div id="current_age_error" class="error"></div>
-
-        <label>Enter your desired retirement age:</label>
-        <input type="number" name="retirement_age" oninput="validateInput(this)" required>
-        <div id="retirement_age_error" class="error"></div>
-
-        <label>Enter your current monthly expenses (₹):</label>
-        <input type="number" name="monthly_expenses" oninput="validateInput(this)" required>
-        <div id="monthly_expenses_error" class="error"></div>
-
-        <label>Enter your monthly in-hand salary (₹):</label>
-        <input type="number" name="monthly_salary" oninput="validateInput(this)" required>
-        <div id="monthly_salary_error" class="error"></div>
-
+    
+        <!-- Personal Information Section -->
+        <div class="form-group">
+            <label for="user_name">Enter your name:</label>
+            <input type="text" name="user_name" id="user_name" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="current_age">Enter your current age:</label>
+            <input type="number" name="current_age" id="current_age" oninput="validateInput(this)" required>
+            <div id="current_age_error" class="error"></div>
+        </div>
+    
+        <div class="form-group">
+            <label for="retirement_age">Enter your desired retirement age:</label>
+            <input type="number" name="retirement_age" id="retirement_age" oninput="validateInput(this)" required>
+            <div id="retirement_age_error" class="error"></div>
+        </div>
+    
+        <div class="form-group">
+            <label for="monthly_expenses">Enter your current monthly expenses (₹):</label>
+            <input type="number" name="monthly_expenses" id="monthly_expenses" oninput="validateInput(this)" required>
+            <div id="monthly_expenses_error" class="error"></div>
+        </div>
+    
+        <div class="form-group">
+            <label for="monthly_salary">Enter your monthly in-hand salary (₹):</label>
+            <input type="number" name="monthly_salary" id="monthly_salary" oninput="validateInput(this)" required>
+            <div id="monthly_salary_error" class="error"></div>
+        </div>
+    
+        <!-- Existing Corpus Section -->
         <h2>Existing Corpus Information</h2>
-        <label>Enter your current PF corpus amount (in ₹):</label>
-        <input type="number" name="pf_corpus" oninput="validateInput(this)" required>
-        <div id="pf_corpus_error" class="error"></div>
-
-        <label>Enter your monthly PF contribution (in ₹):</label>
-        <input type="number" name="pf_contribution" oninput="validateInput(this)" required>
-        <div id="pf_contribution_error" class="error"></div>
-
-        <label>Enter your current investment corpus amount (in ₹):</label>
-        <input type="number" name="investment_corpus" oninput="validateInput(this)" required>
-        <div id="investment_corpus_error" class="error"></div>
-
+    
+        <div class="form-group">
+            <label for="pf_corpus">Enter your current PF corpus amount (₹):</label>
+            <input type="number" name="pf_corpus" id="pf_corpus" oninput="validateInput(this)" required>
+            <div id="pf_corpus_error" class="error"></div>
+        </div>
+    
+        <div class="form-group">
+            <label for="pf_contribution">Enter your monthly PF contribution (₹):</label>
+            <input type="number" name="pf_contribution" id="pf_contribution" oninput="validateInput(this)" required>
+            <div id="pf_contribution_error" class="error"></div>
+        </div>
+    
+        <div class="form-group">
+            <label for="investment_corpus">Enter your current investment corpus amount (₹):</label>
+            <input type="number" name="investment_corpus" id="investment_corpus" oninput="validateInput(this)" required>
+            <div id="investment_corpus_error" class="error"></div>
+        </div>
+    
+        <!-- Goals Section -->
         <h2>Financial Goals</h2>
-        <label>Enter the number of financial goals (1-10):</label>
-        <input type="number" id="num_goals" name="num_goals" min="1" max="10" oninput="validateInput(this); generateGoalFields()" required>
-        <div id="num_goals_error" class="error"></div>
-
         <div id="goal_container"></div>
-
+        <input type="hidden" id="num_goals" name="num_goals" value="0">
+    
+        <!-- Submit Button -->
         <button type="submit">Submit</button>
-    </form>
+    </form>    
 </body>
 </html>
