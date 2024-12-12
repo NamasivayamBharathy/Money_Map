@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, redirect, url_for
 import os
 import financetool
-import pandas as pd 
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -24,16 +24,13 @@ def delete_existing_sheets(folder_path):
 
 @app.route('/')
 def welcome():
-    # Display the welcome page
     return render_template('welcome.html')
 
 @app.route('/input', methods=['GET', 'POST'])
 def input_page():
     if request.method == 'POST':
         try:
-            # Collect form data
             username = request.form['user_name']
-            print(f"Username received: {username}")
             inputs = {
                 'initial_age': int(request.form['current_age']),
                 'retirement_age': int(request.form['retirement_age']),
@@ -45,60 +42,82 @@ def input_page():
                 'goals': []
             }
 
-            num_goals = int(request.form['num_goals'])
-            for i in range(1, num_goals + 1):
-                goal = {
-                    'amount': float(request.form[f'goal_{i}_target']),
-                    'years': int(request.form[f'goal_{i}_years'])
-                }
-                inputs['goals'].append(goal)
+            # Collect goals dynamically
+            for i in range(1, 6):
+                goal_type = request.form.get(f'Goal{i}')
+                if goal_type:
+                    target_amount = float(request.form.get(f'Goal{i}_target', 0))
+                    years_to_achieve = int(request.form.get(f'Goal{i}_years', 0))
+                    inputs['goals'].append({
+                        'type': goal_type,
+                        'amount': target_amount,
+                        'years': years_to_achieve
+                    })
 
-            # Delete existing Excel sheets in the folder
             delete_existing_sheets(GENERATED_FILES_FOLDER)
 
-            # Run the financial planning script with collected inputs
             result = financetool.main(data=inputs)
 
             if result['success']:
-                # Generate the output file name with the user's name
                 output_filename = f"financial_report_{username}.xlsx"
-                output_file_path = os.path.join('static/generated_files', output_filename)
+                output_file_path = os.path.join(GENERATED_FILES_FOLDER, output_filename)
 
-                # Ensure the file is moved to the correct static folder
                 if not os.path.exists(output_file_path):
-                    os.rename(result['output_path'], output_file_path)  # Move the file to static folder
+                    os.rename(result['output_path'], output_file_path)
 
-                # Read the "Summary" sheet using pandas
-                summary_data = pd.read_excel(output_file_path, sheet_name='Summary')
+                # Read the "Summary" sheet
+                df_summary = pd.read_excel(output_file_path, sheet_name="Summary")
+                summary_html = df_summary.to_html(classes='table table-bordered', index=False)
 
-                # Convert the dataframe to HTML (you can format it as needed)
-                summary_html = summary_data.to_html(classes='table table-bordered', index=False)
-
-                # Pass username to result.html
                 return render_template(
                     'result.html',
-                    username=username,  # Pass the username here
-                    output_path=output_filename,  # Pass the file name to the result page
-                    file_path=output_file_path,  # Pass the static file path for download
-                    summary_html=summary_html  # Pass the HTML table of the summary data
+                    username=username,
+                    output_path=output_filename,
+                    summary_html=summary_html
                 )
             else:
                 return f"An error occurred: {result.get('error', result.get('message'))}", 500
 
         except Exception as e:
-            return render_template(
-                'error.html',
-                error_message=f"An unexpected error occurred: {str(e)}"
-            ), 500
+            return render_template('error.html', error_message=str(e)), 500
     else:
-        # Render the input form page
         return render_template('input_form.html')
+
+@app.route('/retirement_plan/<filename>')
+def retirement_plan(filename):
+    try:
+        file_path = os.path.join(GENERATED_FILES_FOLDER, filename)
+        retirement_sheets = ["Retirement Plan", "Investment Allocation"]
+        excel_data = {}
+
+        for sheet_name in retirement_sheets:
+            df = pd.read_excel(file_path, sheet_name=sheet_name)
+            excel_data[sheet_name] = df.to_html(classes='table table-bordered', index=False)
+
+        return render_template('retirement_plan.html', excel_data=excel_data)
+    except Exception as e:
+        return render_template('error.html', error_message=str(e)), 500
+
+@app.route('/goals_plan/<filename>')
+def goals_plan(filename):
+    try:
+        file_path = os.path.join(GENERATED_FILES_FOLDER, filename)
+        all_sheets = pd.ExcelFile(file_path).sheet_names
+        goals_sheets = [sheet for sheet in all_sheets if "Goal" in sheet]
+        excel_data = {}
+
+        for sheet_name in goals_sheets:
+            df = pd.read_excel(file_path, sheet_name=sheet_name)
+            excel_data[sheet_name] = df.to_html(classes='table table-bordered', index=False)
+
+        return render_template('goals_plan.html', excel_data=excel_data)
+    except Exception as e:
+        return render_template('error.html', error_message=str(e)), 500
 
 @app.route('/download/<filename>')
 def download_file(filename):
     try:
-        # Define the path to the static folder or where the file is saved
-        file_path = os.path.join('static/generated_files', filename)  # Static path
+        file_path = os.path.join(GENERATED_FILES_FOLDER, filename)
         return send_file(file_path, as_attachment=True)
     except Exception as e:
         return f"Error: {str(e)}", 500
