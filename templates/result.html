@@ -3,116 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Planning Tool - Result</title>
+    <title>Financial Planning Tool - Summary</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url('{{ url_for("static", filename="images/Currency_note.jpg") }}');
+            background-image: url('{{ url_for("static", filename="images/celebration.gif") }}');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            color: white;
-            font-family: 'Quicksand', sans-serif; /* Use Quicksand font */
-            padding: 20px;
-            height: 100vh; /* Ensure full height for vertical centering */
+            font-family: 'Quicksand', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            color: white;
         }
-
         .container {
-            background-color: rgba(0, 0, 0, 0.7);  /* Semi-transparent background for the container */
+            background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            text-align: center; /* Center the content */
-        }
-
-        h1 {
-            font-family: 'Poppins', sans-serif; /* Use Poppins font for the title */
-            font-size: 2.5rem;
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh; /* Adjust container height to fit the viewport */
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
             margin-bottom: 20px;
         }
-
-        h2 {
-            font-family: 'Poppins', sans-serif; /* Use Poppins font for the subheading */
-            font-weight: 600;
-            font-size: 2rem;
-            text-align: center;
+        .summary {
+            flex-grow: 1;
+            overflow: auto; /* Enable scroll if content exceeds container height */
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1); /* Slightly lighter background */
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            background-color: rgba(0, 0, 0, 0.6);  /* Semi-transparent background for table */
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
         th, td {
             padding: 10px;
-            text-align: left;
             border: 1px solid #ddd;
+            text-align: center;
         }
-
         th {
             background-color: #4CAF50;
             color: white;
         }
-
-        tr:nth-child(even) {
-            background-color: rgba(255, 255, 255, 0.2);  /* Light transparent color for alternating rows */
-        }
-
-        .blink {
-            animation: blink 1s infinite;
-            font-weight: bold; /* Make it bold */
-            font-size: 24px; /* Increase font size */
-            text-decoration: none;
-            color: #FF6347; /* Change color to make it stand out */
-        }
-
-        @keyframes blink {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        a {
-            display: block;
-            text-align: center;
-            color: #4CAF50;
+        button {
+            margin: 15px;
+            padding: 12px 25px;
             font-size: 18px;
-            text-decoration: none;
-            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-
-        a:hover {
-            color: #45a049;
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Financial Planning Tool - Results</h1>
-
-        <div class="result-container">
-            <h2>Hello, {{ username }}!</h2>
-            <p>Thank you for using our Financial Planning Tool. Below is your financial planning summary:</p>
-    
-            <!-- Display summary table -->
-            <div>{{ summary_html | safe }}</div>
-    
-            <p>Download your financial planning report:</p>
-            <a class="blink" href="{{ url_for('download_file', filename=output_path) }}" download>Download Report</a>
-        </div>    
+        <h1>Hello, {{ username }}!</h1>
+        <p>Thank you for using our Financial Planning Tool. Below is your financial planning summary:</p>
+        <div class="summary">
+            <table>
+                {{ summary_html | safe }}
+            </table>
+        </div>
+        <div>
+            <a href="{{ url_for('retirement_plan', filename=output_path) }}">
+                <button>Retirement Plan</button>
+            </a>
+            <a href="{{ url_for('goals_plan', filename=output_path) }}">
+                <button>Goals Plan</button>
+            </a>
+        </div>
     </div>
 </body>
 </html>
